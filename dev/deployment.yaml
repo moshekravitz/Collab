@@ -19,6 +19,8 @@ spec:
         - name: vaultwarden
           image: vaultwarden/server:1.24.0
           env:
+            - name: ROCKET_ADDRESS
+              value: "0.0.0.0"
             - name: DOMAIN
               value: "https://vaultwarden.example.com"
             - name: ADMIN_TOKEN
@@ -39,7 +41,7 @@ spec:
             httpGet:
               path: /
               port: 8080
-            initialDelaySeconds: 5
+            initialDelaySeconds: 30
             timeoutSeconds: 5
           volumeMounts:
             - name: data-storage
