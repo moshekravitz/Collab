@@ -14,6 +14,6 @@ spec:
     spec:
       containers:
       - name: frontend
-        image: hello-world:latest
+        image: vaultwarden/server:latest
         ports:
         - containerPort: 80
