@@ -1,19 +1,54 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: frontend-deployment
+  name: vaultwarden
+  namespace: vaultwarden
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
-      app: frontend
+      app: vaultwarden
+  strategy:
+    type: Recreate
   template:
     metadata:
       labels:
-        app: frontend
+        app: vaultwarden
     spec:
       containers:
-      - name: frontend
-        image: vaultwarden/server:latest
-        ports:
-        - containerPort: 80
+        - name: vaultwarden
+          image: vaultwarden/server:1.24.0
+          env:
+            - name: DOMAIN
+              value: "https://vaultwarden.example.com"
+            - name: ADMIN_TOKEN
+              value: "R@ndomToken$tring"
+            - name: SIGNUPS_ALLOWED
+              value: "true"
+            - name: INVITATIONS_ALLOWED
+              value: "true"
+          ports:
+            - containerPort: 8080
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 8080
+            initialDelaySeconds: 5
+            timeoutSeconds: 5
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 8080
+            initialDelaySeconds: 5
+            timeoutSeconds: 5
+          volumeMounts:
+            - name: data-storage
+              mountPath: /data
+      volumes:
+        - name: data-storage
+          persistentVolumeClaim:
+            claimName: vaultwarden-pvc
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
