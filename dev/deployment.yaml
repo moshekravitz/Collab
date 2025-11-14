@@ -1,56 +1,20 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: vaultwarden
-  namespace: vaultwarden
+  name: hello-echo
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: vaultwarden
-  strategy:
-    type: Recreate
+      app: hello-echo
   template:
     metadata:
       labels:
-        app: vaultwarden
+        app: hello-echo
     spec:
       containers:
-        - name: vaultwarden
-          image: vaultwarden/server:1.24.0
-          env:
-            - name: ROCKET_ADDRESS
-              value: "0.0.0.0"
-            - name: DOMAIN
-              value: "https://vaultwarden.example.com"
-            - name: ADMIN_TOKEN
-              value: "R@ndomToken$tring"
-            - name: SIGNUPS_ALLOWED
-              value: "true"
-            - name: INVITATIONS_ALLOWED
-              value: "true"
-          ports:
-            - containerPort: 8080
-          livenessProbe:
-            httpGet:
-              path: /
-              port: 8080
-            initialDelaySeconds: 5
-            timeoutSeconds: 5
-          readinessProbe:
-            httpGet:
-              path: /
-              port: 8080
-            initialDelaySeconds: 30
-            timeoutSeconds: 5
-          volumeMounts:
-            - name: data-storage
-              mountPath: /data
-      volumes:
-        - name: data-storage
-          persistentVolumeClaim:
-            claimName: vaultwarden-pvc
-      securityContext:
-        runAsUser: 1000
-        runAsGroup: 1000
-        fsGroup: 1000
+      - name: hello-echo
+        image: hashicorp/http-echo
+        args: ["-text", "Hello, World!"]
+        ports:
+        - containerPort: 5678
